@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import type { Product } from '@/core/domain/entities/Product';
+import { Header } from '@/presentation/components/organisms/Header';
+import { ProductDetail } from '@/presentation/components/organisms/ProductDetail';
 
 interface ProductPageProps {
   params: Promise<{ id: string }>;
@@ -77,21 +79,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
   const product: Product = await response.json();
 
   return (
-    <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <article aria-labelledby="product-title">
-        <h1
-          id="product-title"
-          className="mb-4 text-heading-lg text-neutral-900"
-        >
-          {product.title}
-        </h1>
-
-        {/* TODO: <ProductDetail product={product} /> */}
-
-        <p className="text-body-md text-neutral-500">
-          {product.description}
-        </p>
-      </article>
-    </main>
+    <>
+      <Header />
+      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <ProductDetail product={product} />
+      </main>
+    </>
   );
 }

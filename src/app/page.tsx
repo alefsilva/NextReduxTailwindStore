@@ -1,4 +1,6 @@
 import type { Metadata } from 'next';
+import { Header } from '@/presentation/components/organisms/Header';
+import { ProductsSection } from '@/presentation/components/organisms/ProductsSection';
 
 export const metadata: Metadata = {
   title: 'Home',
@@ -9,29 +11,17 @@ export const metadata: Metadata = {
  * Home page — Server Component.
  *
  * With `output: 'export'` this generates /index.html at build time.
- * Client Components (ProductGrid, CategoryFilter) will be imported here
- * and hydrated on the client side with Redux/RTK Query state.
+ * ProductsSection is a Client Component that holds the selectedCategory
+ * state and renders CategoryFilter + ProductGrid, keeping this page
+ * as a pure Server Component (no 'use client' needed here).
  */
 export default function HomePage() {
   return (
-    <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      {/* TODO: <Header /> */}
-
-      <section aria-labelledby="products-heading">
-        <h1
-          id="products-heading"
-          className="mb-8 text-heading-lg text-neutral-900"
-        >
-          All Products
-        </h1>
-
-        {/* TODO: <CategoryFilter /> */}
-        {/* TODO: <ProductGrid /> */}
-
-        <p className="text-body-md text-neutral-500">
-          Product catalog — coming next.
-        </p>
-      </section>
-    </main>
+    <>
+      <Header />
+      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <ProductsSection />
+      </main>
+    </>
   );
 }
