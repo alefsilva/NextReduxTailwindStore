@@ -52,7 +52,7 @@ export async function generateMetadata(
   { params }: ProductPageProps,
 ): Promise<Metadata> {
   const { id } = await params;
-  const response = await fetch(`https://fakestoreapi.com/products/${id}`, {
+  const response = await fetch('https://fakestoreapi.com/products', {
     headers: FETCH_HEADERS,
   });
 
@@ -60,8 +60,12 @@ export async function generateMetadata(
     return { title: 'Product Not Found' };
   }
 
-  const product: Pick<Product, 'title' | 'description' | 'image'> =
-    await response.json();
+  const products: Product[] = await response.json();
+  const product = products.find((p) => p.id === Number(id));
+
+  if (!product) {
+    return { title: 'Product Not Found' };
+  }
 
   return {
     title: product.title,
@@ -81,7 +85,7 @@ export async function generateMetadata(
  */
 export default async function ProductPage({ params }: ProductPageProps) {
   const { id } = await params;
-  const response = await fetch(`https://fakestoreapi.com/products/${id}`, {
+  const response = await fetch('https://fakestoreapi.com/products', {
     headers: FETCH_HEADERS,
   });
 
@@ -89,7 +93,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
     notFound();
   }
 
-  const product: Product = await response.json();
+  const products: Product[] = await response.json();
+  const product = products.find((p) => p.id === Number(id));
+
+  if (!product) {
+    notFound();
+  }
 
   return (
     <>
