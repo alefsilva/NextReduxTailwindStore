@@ -11,7 +11,7 @@ interface ProductCardProps {
 export function ProductCard({ product }: ProductCardProps) {
   return (
     <Link
-      href={`/product/${product.id}/`}
+      href={`/product/${product.id}`}
       className="group flex flex-col overflow-hidden rounded-xl bg-white shadow-card transition-shadow duration-normal hover:shadow-card-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
       aria-label={product.title}
     >
