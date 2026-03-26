@@ -1,18 +1,29 @@
 'use client';
 
+import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ShoppingCart, ChevronLeft } from 'lucide-react';
+import { ShoppingCart, ChevronLeft, Check } from 'lucide-react';
 import type { Product } from '@/core/domain/entities/Product';
 import { Badge } from '@/presentation/components/atoms/Badge';
 import { Rating } from '@/presentation/components/atoms/Rating';
 import { Button } from '@/presentation/components/atoms/Button';
+import { useCart } from '@/presentation/hooks/useCart';
 
 interface ProductDetailProps {
   product: Product;
 }
 
 export function ProductDetail({ product }: ProductDetailProps) {
+  const { addItem } = useCart();
+  const [added, setAdded] = useState(false);
+
+  function handleAddToCart() {
+    addItem(product);
+    setAdded(true);
+    setTimeout(() => setAdded(false), 1500);
+  }
+
   return (
     <div className="space-y-6">
       <Link
@@ -58,9 +69,23 @@ export function ProductDetail({ product }: ProductDetailProps) {
           </p>
 
           <div className="mt-auto pt-4">
-            <Button fullWidth>
-              <ShoppingCart size={18} aria-hidden="true" />
-              Add to Cart
+            <Button
+              fullWidth
+              onClick={handleAddToCart}
+              variant={added ? 'secondary' : 'primary'}
+              aria-label={added ? 'Added to cart' : 'Add to cart'}
+            >
+              {added ? (
+                <>
+                  <Check size={18} aria-hidden="true" />
+                  Added!
+                </>
+              ) : (
+                <>
+                  <ShoppingCart size={18} aria-hidden="true" />
+                  Add to Cart
+                </>
+              )}
             </Button>
           </div>
         </div>

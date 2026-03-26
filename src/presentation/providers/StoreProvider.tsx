@@ -17,10 +17,12 @@
  *   React StrictMode (which double-invokes components during development).
  */
 
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 import { Provider } from 'react-redux';
 import { store } from '@/infra/store/store';
+import { hydrateCart } from '@/infra/store/cartSlice';
 import type { AppStore } from '@/infra/store/store';
+import type { CartItem } from '@/core/domain/entities/CartItem';
 
 interface StoreProviderProps {
   children: React.ReactNode;
@@ -32,6 +34,27 @@ export function StoreProvider({ children }: StoreProviderProps) {
   if (storeRef.current === null) {
     storeRef.current = store;
   }
+
+  /**
+   * Hydrate cart from localStorage AFTER the first render.
+   *
+   * useEffect is client-only and runs post-hydration, so the initial
+   * server HTML (empty cart) always matches the first client render.
+   * React then performs a normal re-render with the real cart data.
+   */
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem('cart');
+      if (raw) {
+        const parsed = JSON.parse(raw) as { items: CartItem[] };
+        if (Array.isArray(parsed.items)) {
+          storeRef.current!.dispatch(hydrateCart(parsed.items));
+        }
+      }
+    } catch {
+      // Ignore corrupt or unavailable localStorage data
+    }
+  }, []);
 
   return (
     <Provider store={storeRef.current}>
