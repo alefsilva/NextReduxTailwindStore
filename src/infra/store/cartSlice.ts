@@ -8,9 +8,7 @@ interface CartState {
   items: CartItem[];
 }
 
-const initialState: CartState = {
-  items: [],
-};
+const initialState: CartState = { items: [] };
 
 export const cartSlice = createSlice({
   name: 'cart',
@@ -63,10 +61,19 @@ export const cartSlice = createSlice({
     clearCart(state) {
       state.items = [];
     },
+
+    /**
+     * Replaces the cart state with data loaded from localStorage.
+     * Must only be dispatched from a useEffect (client-only, post-hydration)
+     * to avoid server/client HTML mismatch.
+     */
+    hydrateCart(state, action: PayloadAction<CartItem[]>) {
+      state.items = action.payload;
+    },
   },
 });
 
-export const { addItem, removeItem, updateQuantity, clearCart } =
+export const { addItem, removeItem, updateQuantity, clearCart, hydrateCart } =
   cartSlice.actions;
 
 // ─── Selectors ────────────────────────────────────────────────────────────────
