@@ -8,18 +8,40 @@ import type { Product } from '@/core/domain/entities/Product';
 import { Badge } from '@/presentation/components/atoms/Badge';
 import { Rating } from '@/presentation/components/atoms/Rating';
 import { Button } from '@/presentation/components/atoms/Button';
+import { Spinner } from '@/presentation/components/atoms/Spinner';
 import { useCart } from '@/presentation/hooks/useCart';
+import { useGetProductByIdQuery } from '@/infra/api/productsApi';
 
 interface ProductDetailProps {
-  product: Product;
+  product: Product | null;
+  productId: number;
 }
 
-export function ProductDetail({ product }: ProductDetailProps) {
+export function ProductDetail({ product: initialProduct, productId }: ProductDetailProps) {
   const { addItem } = useCart();
   const [added, setAdded] = useState(false);
 
+  /**
+   * Skip the query when the Server Component already provided product data
+   * at build time. Only fires in the browser when the build-time fetch
+   * failed (API rate-limited in CI) — transparently recovers with real data.
+   */
+  const { data: fetchedProduct, isLoading } = useGetProductByIdQuery(productId, {
+    skip: initialProduct !== null,
+  });
+
+  const product = initialProduct ?? fetchedProduct ?? null;
+
+  if (isLoading || !product) {
+    return (
+      <div className="flex justify-center py-20">
+        <Spinner />
+      </div>
+    );
+  }
+
   function handleAddToCart() {
-    addItem(product);
+    addItem(product!);
     setAdded(true);
     setTimeout(() => setAdded(false), 1500);
   }
